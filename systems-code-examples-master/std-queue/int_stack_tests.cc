@@ -1,15 +1,11 @@
-//
-// Expanded tests for int_stack operations.
-//
-
 #include <gtest/gtest.h>
 #include "int_stack.hh"
 
 TEST(IntStackTests, Initialization) {
     int_stack_t stack;
     int_stack_init(&stack, 10);
-    ASSERT_EQ(int_stack_size(&stack), 0);
-    ASSERT_EQ(int_stack_capacity(&stack), 10);
+    ASSERT_EQ(stack.size, 0);
+    ASSERT_EQ(stack.capacity, 10);
 }
 
 TEST(IntStackTests, PushToCapacityAndOverflow) {
@@ -106,7 +102,7 @@ TEST(IntStackTests, DropTop) {
     int_stack_push(&stack, 1);
     int_stack_push(&stack, 2);
     ASSERT_TRUE(int_stack_drop(&stack));
-    ASSERT_EQ(int_stack_size(&stack), 1); // Size should decrease by 1
+    ASSERT_EQ(stack.size, 1); // Size should decrease by 1
     int value;
     int_stack_pop(&stack, &value);
     ASSERT_EQ(value, 1); // Verify that 2 was dropped
@@ -137,7 +133,7 @@ TEST(IntStackTests, DuplicateTopTwo) {
     int_stack_push(&stack, 1);
     int_stack_push(&stack, 2);
     ASSERT_TRUE(int_stack_2dup(&stack));
-    ASSERT_EQ(int_stack_size(&stack), 4); // Size should double
+    ASSERT_EQ(stack.size, 4); // Size should double
     int value;
     int_stack_pop(&stack, &value);
     ASSERT_EQ(value, 2); // Duplicated values on top
@@ -147,6 +143,7 @@ TEST(IntStackTests, DuplicateTopTwo) {
 
 TEST(IntStackTests, TwoOverOperation) {
     int_stack_t stack;
+    int value;
     int_stack_init(&stack, 10); // Correct initialization with capacity
 
     // Push some values onto the stack
@@ -161,10 +158,9 @@ TEST(IntStackTests, TwoOverOperation) {
     // After the 2OVER operation, the stack should now be: 3, 5, 8, 1, 8 (from bottom to top)
 
     // Verify the stack size has increased by 1, indicating a new item was added
-    ASSERT_EQ(int_stack_size(&stack), 5);
+    ASSERT_EQ(stack.size, 5);
 
     // Verify the top of the stack is now the duplicated value (8, which was the second item from the top)
-    int value;
     int_stack_pop(&stack, &value);
     ASSERT_EQ(value, 8); // Top value after 2OVER
 
@@ -179,9 +175,6 @@ TEST(IntStackTests, TwoOverOperation) {
     ASSERT_EQ(value, 3); // Finally, the original bottom value
 }
 
-
-
-
 TEST(IntStackTests, DropTopTwo) {
     int_stack_t stack;
     int_stack_init(&stack, 10);
@@ -189,7 +182,7 @@ TEST(IntStackTests, DropTopTwo) {
     int_stack_push(&stack, 2);
     int_stack_push(&stack, 3);
     ASSERT_TRUE(int_stack_2drop(&stack));
-    ASSERT_EQ(int_stack_size(&stack), 1); // Size decreases by 2
+    ASSERT_EQ(stack.size, 1); // Size decreases by 2
     int value;
     int_stack_pop(&stack, &value);
     ASSERT_EQ(value, 1); // Verify remaining value
@@ -201,13 +194,11 @@ TEST(IntStackTests, AddTopTwoValues) {
     int_stack_push(&stack, 1);
     int_stack_push(&stack, 2);
     ASSERT_TRUE(int_stack_add(&stack));
-    ASSERT_EQ(int_stack_size(&stack), 1); // Size decreases by 1 after add
+    ASSERT_EQ(stack.size, 1); // Size decreases by 1 after add
     int value;
     int_stack_pop(&stack, &value);
     ASSERT_EQ(value, 3); // Verify addition result
 }
-
-
 
 // Edge Case Tests
 TEST(IntStackTests, EmptyStackOperations) {
